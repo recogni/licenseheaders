@@ -33,7 +33,7 @@ import contextlib
 from shutil import copyfile
 from string import Template
 
-import regex as re
+    import regex as re
 
 __version__ = '0.8.8'
 __author__ = 'Johann Petrak'
@@ -409,6 +409,8 @@ def parse_command_line(argv):
                         help="Name of project to use.")
     parser.add_argument("-u", "--projurl", dest="projecturl", default=None,
                         help="Url of project to use.")
+    parser.add_argument("-a", "--author", dest="author", default=None,
+                        help="Author name / email / description to use.")
     parser.add_argument("--enc", nargs=1, dest="encoding", default=default_encoding,
                         help="Encoding of program files (default: {})".format(default_encoding))
     parser.add_argument("--dry", action="store_true", help="Only show what would get done, do not change any files")
@@ -864,6 +866,8 @@ def main():
             settings["projectname"] = arguments.projectname
         if arguments.projecturl:
             settings["projecturl"] = arguments.projecturl
+        if arguments.author:
+            settings["author"] = arguments.author
         # if we have a template name specified, try to get or load the template
         if arguments.tmpl:
             opt_tmpl = arguments.tmpl
