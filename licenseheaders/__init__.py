@@ -33,7 +33,7 @@ import contextlib
 from shutil import copyfile
 from string import Template
 
-    import regex as re
+import regex as re
 
 __version__ = '0.8.8'
 __author__ = 'Johann Petrak'
