@@ -323,9 +323,6 @@ TYPE_SETTINGS = {
     }
 }
 
-yearsPattern = re.compile(
-    r"(?<=Copyright\s*(?:\(\s*[Cc©]\s*\)\s*))?([0-9][0-9][0-9][0-9](?:-[0-9][0-9]?[0-9]?[0-9]?)?)",
-    re.IGNORECASE)
 licensePattern = re.compile(r"license", re.IGNORECASE)
 emptyPattern = re.compile(r'^\s*$')
 
@@ -405,6 +402,9 @@ def parse_command_line(argv):
                         help="Year or year range to use.")
     parser.add_argument("-cy", "--current-year", dest="current_year", action="store_true",
                         help="Use today's year.")
+    parser.add_argument("--years-pattern", dest="years_pattern",
+                        default=r"(?<=Copyright\s*(?:\(\s*[Cc©]\s*\)\s*))?([0-9][0-9][0-9][0-9](?:-[0-9][0-9]?[0-9]?[0-9]?)?)",
+                        help=".")
     parser.add_argument("-o", "--owner", dest="owner", default=None,
                         help="Name of copyright owner to use.")
     parser.add_argument("-n", "--projname", dest="projectname", default=None,
@@ -677,7 +677,7 @@ def read_file(file, args, type_settings):
                         "haveLicense": have_license,
                         "contentsDigest": contents_digest
                         }
-            elif yearsPattern.findall(lines[j]):
+            elif args.years_pattern.findall(lines[j]):
                 have_license = True
                 years_line = j
         # if we went through all the lines without finding an end, maybe we have some syntax error or some other
@@ -710,7 +710,7 @@ def read_file(file, args, type_settings):
                         "haveLicense": have_license,
                         "contentsDigest": contents_digest
                         }
-            elif yearsPattern.findall(lines[j]):
+            elif args.years_pattern.findall(lines[j]):
                 have_license = True
                 years_line = j
         # if we went through all the lines without finding the end of the block, it could be that the whole
@@ -893,6 +893,8 @@ def main():
             now = datetime.datetime.now()
             years = str(now.year)
 
+        arguments.years_pattern = re.compile(arguments.years_pattern, re.IGNORECASE)
+
         settings = {}
         if years:
             settings["years"] = years
@@ -1020,7 +1022,7 @@ def main():
                                 if (fw is not None):
                                     LOGGER.debug("Updating years in file {} in line {}".format(file, years_line))
                                     fw.writelines(lines[0:years_line])
-                                    fw.write(yearsPattern.sub(years, lines[years_line]))
+                                    fw.write(arguments.years_pattern.sub(years, lines[years_line]))
                                     fw.writelines(lines[years_line + 1:])
                             # TODO: optionally remove backup if all worked well
             return 0
